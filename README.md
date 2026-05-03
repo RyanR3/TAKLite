@@ -28,6 +28,16 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 - **14 Team Colors** — Cyan, Red, Blue, Green, Yellow, Orange, White, Purple, Maroon, Dark Blue, Dark Green, Teal, Brown, Magenta
 - **6 Roles** — Team Member, Team Lead, HQ, Sniper, Medic, RTO
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/Screenshot_20260503_181543.png" width="250" alt="Map View"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/Screenshot_20260503_181614.png" width="250" alt="Emergency Alerts"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/Screenshot_20260503_181627.png" width="250" alt="Settings"/>
+</p>
+
 ## Requirements
 
 - Android 7.0 (API 24) or higher
