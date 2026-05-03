@@ -35,7 +35,7 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
   &nbsp;&nbsp;
   <img src="screenshots/Screenshot_20260503_181614.png" width="250" alt="Emergency Alerts"/>
   &nbsp;&nbsp;
-  <img src="screenshots/Screenshot_20260503_181627.png" width="250" alt="Settings"/>
+  <img src="screenshots/Screenshot_20260503_191242.png" width="250" alt="Settings"/>
 </p>
 
 ## Requirements
