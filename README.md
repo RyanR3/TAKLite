@@ -22,7 +22,7 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 - **Position Reporting (PLI)** — Sends your location every 5 seconds, including in the background
 - **Team Tracking** — See all connected team members on an OpenStreetMap-based map
 - **Emergency Alerts** — Send and receive alerts: 911, Ring the Bell, Troops in Contact, Geofence Breach
-- **Hardware Panic Button** — Trigger an alert using volume + power key combination
+- **Hardware Panic Button** — Trigger an alert by pressing the power button 3 times
 - **Group Assignment** — Fetch and assign server groups
 - **Multiple Map Layers** — Street, satellite, hybrid, and topographic views
 - **14 Team Colors** — Cyan, Red, Blue, Green, Yellow, Orange, White, Purple, Maroon, Dark Blue, Dark Green, Teal, Brown, Magenta
