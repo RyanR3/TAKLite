@@ -42,15 +42,6 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 4. Scan a QR enrollment code or manually enter server details
 5. You're on the map
 
-## Building from Source
-
-```bash
-git clone https://github.com/RyanR3/TAKLite.git
-cd TAKLite
-./gradlew assembleDebug
-```
-
-The APK will be at `app/build/outputs/apk/debug/TAKLite-V1.0.0-debug.apk`.
 
 ## License
 
