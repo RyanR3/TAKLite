@@ -1,0 +1,223 @@
+package com.taklite.app.tak;
+
+import android.util.Log;
+
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.security.KeyStore;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+
+public class TakClient extends Thread {
+
+    private static final String TAG = "TakClient";
+    private static final long RECONNECT_DELAY_MS = 5000;
+
+    private final String serverAddress;
+    private final int port;
+    private final String trustStorePath;
+    private final String trustStorePassword;
+    private final String clientCertPath;
+    private final String clientCertPassword;
+    private final TakClientListener listener;
+
+    private volatile boolean mRun = false;
+    private Socket socket;
+    private SSLSocket sslSocket;
+    private PrintWriter mBufferOut;
+    private InputStream mInputStream;
+
+    public interface TakClientListener {
+        void onCotReceived(String xml);
+        void onConnected();
+        void onDisconnected();
+    }
+
+    public TakClient(String serverAddress, int port,
+                     String trustStorePath, String trustStorePassword,
+                     String clientCertPath, String clientCertPassword,
+                     TakClientListener listener) {
+        super("TakClient-Thread");
+        this.serverAddress = serverAddress;
+        this.port = port;
+        this.trustStorePath = trustStorePath;
+        this.trustStorePassword = trustStorePassword;
+        this.clientCertPath = clientCertPath;
+        this.clientCertPassword = clientCertPassword;
+        this.listener = listener;
+        setDaemon(true);
+    }
+
+    public void sendMessage(final String message) {
+        if (mBufferOut == null) return;
+        new Thread(() -> {
+            try {
+                if (mBufferOut != null) {
+                    mBufferOut.println(message);
+                    mBufferOut.flush();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error sending message", e);
+            }
+        }, "TakClient-Send").start();
+    }
+
+    public void stopClient() {
+        mRun = false;
+        closeConnection();
+    }
+
+    public boolean isConnected() {
+        if (sslSocket != null) return sslSocket.isConnected() && !sslSocket.isClosed();
+        if (socket != null) return socket.isConnected() && !socket.isClosed();
+        return false;
+    }
+
+    @Override
+    public void run() {
+        mRun = true;
+
+        while (mRun) {
+            try {
+                connect();
+                if (listener != null) listener.onConnected();
+
+                // Read loop — use raw byte reading to avoid BufferedReader
+                // losing data on SocketTimeoutException
+                byte[] buf = new byte[8192];
+                StringBuilder recvBuffer = new StringBuilder();
+                while (mRun) {
+                    try {
+                        int bytesRead = mInputStream.read(buf);
+                        if (bytesRead == -1) {
+                            Log.w(TAG, "Server closed connection (EOF)");
+                            break;
+                        }
+                        String chunk = new String(buf, 0, bytesRead, "UTF-8");
+                        recvBuffer.append(chunk);
+                        Log.d(TAG, "Raw data received (" + bytesRead + " bytes)");
+
+                        // Deliver complete CoT events (delimited by </event>)
+                        int endIdx;
+                        while ((endIdx = recvBuffer.indexOf("</event>")) != -1) {
+                            int end = endIdx + "</event>".length();
+                            String message = recvBuffer.substring(0, end).trim();
+                            recvBuffer.delete(0, end);
+                            if (!message.isEmpty() && listener != null) {
+                                Log.d(TAG, "CoT message complete (" + message.length() + " chars)");
+                                listener.onCotReceived(message);
+                            }
+                        }
+                    } catch (SocketTimeoutException e) {
+                        // Normal — timeout, loop back to check mRun
+                    } catch (SocketException e) {
+                        Log.e(TAG, "Socket error: " + e.getMessage());
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Connection error: " + e.getMessage());
+            }
+
+            closeConnection();
+            if (listener != null) listener.onDisconnected();
+
+            // Reconnect after delay if still running
+            if (mRun) {
+                Log.d(TAG, "Reconnecting in " + RECONNECT_DELAY_MS + "ms...");
+                try {
+                    Thread.sleep(RECONNECT_DELAY_MS);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private void connect() throws Exception {
+        InetAddress addr = InetAddress.getByName(serverAddress);
+
+        boolean useTls = trustStorePath != null && !trustStorePath.isEmpty()
+                && clientCertPath != null && !clientCertPath.isEmpty();
+
+        if (useTls) {
+            Log.d(TAG, "Connecting via TLS to " + serverAddress + ":" + port);
+
+            // Load trust store
+            KeyStore trustStore = KeyStore.getInstance("PKCS12");
+            FileInputStream trustIs = new FileInputStream(trustStorePath);
+            trustStore.load(trustIs, trustStorePassword.toCharArray());
+            trustIs.close();
+
+            // Load client certificate
+            KeyStore clientStore = KeyStore.getInstance("PKCS12");
+            FileInputStream clientIs = new FileInputStream(clientCertPath);
+            clientStore.load(clientIs, clientCertPassword.toCharArray());
+            clientIs.close();
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(clientStore, clientCertPassword.toCharArray());
+
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+            SSLSocketFactory factory = sslContext.getSocketFactory();
+            sslSocket = (SSLSocket) factory.createSocket(addr, port);
+            sslSocket.setSoTimeout(1000);
+
+            mBufferOut = new PrintWriter(new BufferedWriter(
+                    new OutputStreamWriter(sslSocket.getOutputStream())), true);
+            mInputStream = sslSocket.getInputStream();
+        } else {
+            Log.d(TAG, "Connecting via TCP to " + serverAddress + ":" + port);
+
+            socket = new Socket(addr, port);
+            socket.setSoTimeout(1000);
+
+            mBufferOut = new PrintWriter(new BufferedWriter(
+                    new OutputStreamWriter(socket.getOutputStream())), true);
+            mInputStream = socket.getInputStream();
+        }
+
+        Log.d(TAG, "Connected to " + serverAddress + ":" + port);
+    }
+
+    private void closeConnection() {
+        try {
+            if (mBufferOut != null) {
+                mBufferOut.flush();
+                mBufferOut.close();
+            }
+        } catch (Exception e) { /* ignore */ }
+        try {
+            if (sslSocket != null) sslSocket.close();
+        } catch (IOException e) { /* ignore */ }
+        try {
+            if (socket != null) socket.close();
+        } catch (IOException e) { /* ignore */ }
+
+        try {
+            if (mInputStream != null) mInputStream.close();
+        } catch (IOException e) { /* ignore */ }
+
+        mBufferOut = null;
+        mInputStream = null;
+        sslSocket = null;
+        socket = null;
+    }
+}
