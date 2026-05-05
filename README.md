@@ -37,13 +37,13 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 <p align="center">
   <img src="screenshots/Screenshot_20260503_181543.png" width="250" alt="Map View"/>
   &nbsp;&nbsp;
-  <img src="screenshots/Screenshot_20260503_181614.png" width="250" alt="Emergency Alerts"/>
+  <img src="screenshots/Screenshot_20260504_214136.png" width="250" alt="Emergency Alerts"/>
   &nbsp;&nbsp;
   <img src="screenshots/Screenshot_20260503_191242.png" width="250" alt="Settings"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/Screenshot_20260504_190442.png" width="250" alt="Marker Picker"/>
+  <img src="screenshots/Screenshot_20260504_214146.png" width="250" alt="Marker Picker"/>
   &nbsp;&nbsp;
   <img src="screenshots/Screenshot_20260504_190456.png" width="250" alt="Radial Menu"/>
   &nbsp;&nbsp;
