@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_rounded_bg">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/alertDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Emergency Alert"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:background="@drawable/dialog_rounded_top" />
+
+    <!-- Alert options -->
+    <LinearLayout
+        android:id="@+id/alertOptionsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/alertOption911"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="911 Alert"
+            android:textColor="#CCCCCC"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/alertOptionBell"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ring The Bell"
+            android:textColor="#CCCCCC"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/alertOptionContact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="In Contact"
+            android:textColor="#CCCCCC"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/alertOptionGeofence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Geo-fence Breached"
+            android:textColor="#CCCCCC"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+    <!-- Cancel message (for cancel mode) -->
+    <TextView
+        android:id="@+id/alertCancelMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel your active emergency alert?"
+        android:textColor="#CCCCCC"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:visibility="gone" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:padding="12dp"
+        android:background="@drawable/dialog_rounded_bottom">
+
+        <TextView
+            android:id="@+id/btnAlertCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/btnAlertConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL ALERT"
+            android:textColor="#FF5555"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+</LinearLayout>

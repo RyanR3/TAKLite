@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_rounded_bg">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Marker"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:background="@drawable/dialog_rounded_top" />
+
+    <!-- Message -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Are you sure you want to delete this marker?"
+        android:textColor="#CCCCCC"
+        android:textSize="14sp"
+        android:padding="16dp" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:padding="12dp"
+        android:background="@drawable/dialog_rounded_bottom">
+
+        <TextView
+            android:id="@+id/btnCancelDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/btnConfirmDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DELETE"
+            android:textColor="#FF5555"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+</LinearLayout>
