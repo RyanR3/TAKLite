@@ -10,6 +10,10 @@
 
 ---
 
+> **NOTICE:** Version 1.4.2 uses a new signing key. If you have a previous version installed, you must **uninstall it first** before installing this update. A fresh install is required.
+
+---
+
 ## About
 
 TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK servers over TLS, shares your position with teammates, and displays everyone on a real-time map. It's designed to be simple and fast — no bloat, just the essentials.
@@ -23,6 +27,9 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 - **Position Reporting (PLI)** — Sends your location every 5 seconds, including in the background
 - **Team Tracking** — See all connected team members on an OpenStreetMap-based map
 - **Emergency Alerts** — Send and receive alerts: 911, Ring the Bell, Troops in Contact, Geofence Breach
+- **Incoming Alert Popup** — Full-screen alert dialog with alarm sound when a teammate triggers an emergency
+- **Locate on Alert** — Instantly zoom to a teammate's position from an incoming alert
+- **Background Alerts** — Receive emergency alerts with alarm and lock screen notification even when the app is minimized
 - **Hardware Panic Button** — Trigger an alert by pressing the power button 3 times
 - **Marker Drops** — Place Friendly, Hostile, Unknown, and Neutral markers using MIL-STD-2525 icons
 - **Radial Menu** — ATAK-style radial menu on markers with Delete, Send, and Edit actions
@@ -59,7 +66,7 @@ TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK serv
 
 ## Requirements
 
-- Android 7.0 (API 24) or higher
+- Android 8.0 (API 26) or higher
 - Location permissions (foreground and background)
 - A TAK server to connect to
 
