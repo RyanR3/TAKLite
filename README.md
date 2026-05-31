@@ -10,7 +10,7 @@
 
 ---
 
-> **NOTICE:** Version 1.4.2 uses a new signing key. If you have a previous version installed, you must **uninstall it first** before installing this update. A fresh install is required.
+> **NOTICE:** Version 1.3.2 uses a new signing key. If you have a previous version installed, you must **uninstall it first** before installing this update. A fresh install is required.
 
 ---
 
