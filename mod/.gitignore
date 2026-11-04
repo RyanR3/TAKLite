@@ -1,0 +1,4 @@
+work/
+out/
+# Signing keys stay on your machine. Back yours up: updates need the same key.
+keystore/

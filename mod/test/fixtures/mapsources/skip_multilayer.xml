@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customMultiLayerMapSource>
+    <name>Test - Multi-layer (unsupported)</name>
+    <layers>
+        <customMapSource><name>Base</name><minZoom>0</minZoom><maxZoom>15</maxZoom><tileType>jpg</tileType><url>https://a.example.test/{$z}/{$x}/{$y}</url></customMapSource>
+        <customMapSource><name>Overlay</name><minZoom>0</minZoom><maxZoom>15</maxZoom><tileType>png</tileType><url>https://b.example.test/{$z}/{$x}/{$y}</url></customMapSource>
+    </layers>
+    <layersAlpha>1.0 0.6</layersAlpha>
+</customMultiLayerMapSource>
