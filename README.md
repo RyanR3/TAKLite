@@ -14,6 +14,17 @@
 
 ---
 
+## Custom maps and data import (mod/)
+
+The `mod/` folder adds your own map sources, such as TileServer GL
+(`https://tiles.example.com/styles/mapName/512/{z}/{x}/{y}.png`), offline map download,
+and import of TAK data packages, KML, KMZ and GPX to TAK Lite 1.5.0.
+Upstream no longer publishes the app's source, so the features are built on top
+of the official release APK. See [mod/README.md](mod/README.md) for how to use
+and build it.
+
+---
+
 ## About
 
 TAK Lite is a minimalist [TAK](https://tak.gov) client that connects to TAK servers over TLS, shares your position with teammates, and displays everyone on a real-time map. It's designed to be simple and fast — no bloat, just the essentials.

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customMapSource>
+    <name>Test - Plate Carree (unsupported)</name>
+    <minZoom>0</minZoom>
+    <maxZoom>12</maxZoom>
+    <tileType>png</tileType>
+    <url>https://pc.example.test/{$z}/{$x}/{$y}.png</url>
+    <coordinatesystem>EPSG:4326</coordinatesystem>
+</customMapSource>

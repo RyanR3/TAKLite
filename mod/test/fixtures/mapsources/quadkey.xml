@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customMapSource>
+    <name>Test - Quadkey</name>
+    <minZoom>1</minZoom>
+    <maxZoom>20</maxZoom>
+    <tileType>jpg</tileType>
+    <url>https://quad.example.test/tiles/a{$q}?g=1&amp;mkt=en-us</url>
+    <serverParts></serverParts>
+</customMapSource>

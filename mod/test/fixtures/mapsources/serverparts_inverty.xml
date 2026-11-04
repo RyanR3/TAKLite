@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customMapSource>
+    <name>Test - Server Parts TMS</name>
+    <minZoom>2</minZoom>
+    <maxZoom>17</maxZoom>
+    <tileType>png</tileType>
+    <url>https://{$serverpart}.tms.example.test/{$z}/{$x}/{$y}.png</url>
+    <serverParts>a b c</serverParts>
+    <invertYCoordinate>true</invertYCoordinate>
+    <coordinatesystem>EPSG:3857</coordinatesystem>
+</customMapSource>

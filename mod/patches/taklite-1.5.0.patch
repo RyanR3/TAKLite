@@ -1,0 +1,620 @@
+diff -ruN a/AndroidManifest.xml b/AndroidManifest.xml
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -25,7 +25,7 @@
+     <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
+     <permission android:name="com.taklite.client.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature"/>
+     <uses-permission android:name="com.taklite.client.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+-    <application android:allowBackup="false" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:dataExtractionRules="@xml/data_extraction_rules" android:extractNativeLibs="false" android:fullBackupContent="false" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/AppTheme">
++    <application android:usesCleartextTraffic="true" android:allowBackup="false" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:dataExtractionRules="@xml/data_extraction_rules" android:extractNativeLibs="false" android:fullBackupContent="false" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/AppTheme">
+         <activity android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true" android:launchMode="singleTask" android:name="com.taklite.client.MainActivity" android:screenOrientation="unspecified">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN"/>
+@@ -37,6 +37,7 @@
+         <activity android:configChanges="keyboardHidden|orientation|screenSize" android:exported="false" android:name="com.taklite.client.SettingsActivity" android:parentActivityName="com.taklite.client.MainActivity" android:screenOrientation="unspecified"/>
+         <activity android:configChanges="keyboardHidden|orientation|screenSize" android:exported="false" android:name="com.taklite.client.TrackHistoryActivity" android:parentActivityName="com.taklite.client.MainActivity" android:screenOrientation="unspecified"/>
+         <service android:enabled="true" android:exported="false" android:foregroundServiceType="location" android:name="com.taklite.client.tak.TakLocationService"/>
++        <activity android:exported="true" android:excludeFromRecents="true" android:label="Import to TAK Lite" android:name="com.taklite.client.mod.imports.ImportActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"><intent-filter><action android:name="android.intent.action.VIEW"/><category android:name="android.intent.category.DEFAULT"/><data android:scheme="content"/><data android:mimeType="application/vnd.google-earth.kml+xml"/><data android:mimeType="application/vnd.google-earth.kmz"/><data android:mimeType="application/gpx+xml"/><data android:mimeType="application/zip"/><data android:mimeType="application/x-zip-compressed"/><data android:mimeType="application/octet-stream"/><data android:mimeType="application/xml"/><data android:mimeType="text/xml"/></intent-filter><intent-filter><action android:name="android.intent.action.SEND"/><category android:name="android.intent.category.DEFAULT"/><data android:mimeType="application/vnd.google-earth.kml+xml"/><data android:mimeType="application/vnd.google-earth.kmz"/><data android:mimeType="application/gpx+xml"/><data android:mimeType="application/zip"/><data android:mimeType="application/x-zip-compressed"/><data android:mimeType="application/octet-stream"/><data android:mimeType="application/xml"/><data android:mimeType="text/xml"/></intent-filter></activity>
+         <activity android:clearTaskOnLaunch="true" android:name="com.journeyapps.barcodescanner.CaptureActivity" android:screenOrientation="sensorLandscape" android:stateNotNeeded="true" android:theme="@style/zxing_CaptureTheme" android:windowSoftInputMode="stateAlwaysHidden"/>
+         <provider android:authorities="com.taklite.client.androidx-startup" android:exported="false" android:name="androidx.startup.InitializationProvider">
+             <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+diff -ruN a/apktool.yml b/apktool.yml
+--- a/apktool.yml
++++ b/apktool.yml
+@@ -13,7 +13,7 @@
+   renameManifestPackage: null
+ versionInfo:
+   versionCode: 29
+-  versionName: 1.5.0
++  versionName: 1.5.0-custommaps
+ resourcesAreCompressed: false
+ sharedLibrary: false
+ sparseResources: false
+diff -ruN a/res/drawable/ic_mod_data_package.xml b/res/drawable/ic_mod_data_package.xml
+--- a/res/drawable/ic_mod_data_package.xml
++++ b/res/drawable/ic_mod_data_package.xml
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24.0dip" android:height="24.0dip" android:viewportWidth="24.0" android:viewportHeight="24.0">
++    <path android:strokeColor="#ffffffff" android:strokeWidth="1.8" android:strokeLineJoin="round" android:pathData="M4.5,3.5 L19.5,3.5 Q20.5,3.5 20.5,4.5 L20.5,19.5 Q20.5,20.5 19.5,20.5 L4.5,20.5 Q3.5,20.5 3.5,19.5 L3.5,4.5 Q3.5,3.5 4.5,3.5 Z" />
++    <path android:strokeColor="#ffffffff" android:strokeWidth="1.8" android:strokeLineJoin="round" android:pathData="M9.5,3.5 L9.5,10.5 L12,9 L14.5,10.5 L14.5,3.5" />
++    <path android:fillColor="#ffffffff" android:pathData="M6,15 L9,15 L9,17.2 L6,17.2 Z M10.2,15.6 L13.8,15.6 L13.8,16.7 L10.2,16.7 Z" />
++</vector>
+diff -ruN a/res/layout/activity_main.xml b/res/layout/activity_main.xml
+--- a/res/layout/activity_main.xml
++++ b/res/layout/activity_main.xml
+@@ -5,6 +5,7 @@
+         <TextView android:textSize="20.0sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/app_name" android:layout_weight="1.0" />
+         <View android:id="@id/connectionStatusDot" android:background="@drawable/status_dot_red" android:layout_width="10.0dip" android:layout_height="10.0dip" android:layout_marginEnd="6.0dip" />
+         <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:id="@id/connectionStatusText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/disconnected" android:layout_marginEnd="12.0dip" />
++        <ImageButton android:tag="data_packages_button" android:background="?selectableItemBackgroundBorderless" android:padding="5.0dip" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@drawable/ic_mod_data_package" android:scaleType="fitCenter" android:contentDescription="Data Packages" android:layout_marginEnd="4.0dip" app:tint="@color/text_secondary" />
+         <ImageButton android:id="@id/settingsButton" android:background="?selectableItemBackgroundBorderless" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@android:drawable/ic_menu_manage" android:contentDescription="@string/settings" app:tint="@android:color/white" />
+         <ImageButton android:id="@id/shutdownButton" android:background="?selectableItemBackgroundBorderless" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@android:drawable/ic_lock_power_off" android:contentDescription="Shutdown" android:layout_marginStart="4.0dip" app:tint="#ffff5555" />
+     </LinearLayout>
+diff -ruN a/res/layout/activity_settings.xml b/res/layout/activity_settings.xml
+--- a/res/layout/activity_settings.xml
++++ b/res/layout/activity_settings.xml
+@@ -4,59 +4,66 @@
+     <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/titleBar" android:background="@color/primary" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:elevation="4.0dip" app:layout_constraintTop_toTopOf="parent">
+         <ImageButton android:id="@id/backButton" android:background="?selectableItemBackgroundBorderless" android:layout_width="40.0dip" android:layout_height="40.0dip" android:src="@android:drawable/ic_menu_revert" android:contentDescription="Back" app:tint="@android:color/white" />
+         <TextView android:textSize="20.0sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/settings" android:layout_weight="1.0" android:layout_marginStart="8.0dip" />
++        <Button android:textSize="12.0sp" android:textColor="@android:color/white" android:textAllCaps="false" android:tag="mod_clear_markers_button" android:layout_width="wrap_content" android:layout_height="36.0dip" android:minHeight="0.0dip" android:minWidth="0.0dip" android:paddingStart="12.0dip" android:paddingEnd="12.0dip" android:text="Clear All Markers" android:backgroundTint="#ffcc0000" />
+     </LinearLayout>
+     <ScrollView android:layout_width="fill_parent" android:layout_height="0.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@id/titleBar">
+         <LinearLayout android:orientation="vertical" android:background="@color/surface" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Callsign" />
+-            <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takCallsign" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="12.0dip" android:hint="Your callsign" android:inputType="text" />
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Phone Number" />
+-            <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takPhone" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="12.0dip" android:hint="Your phone number" android:inputType="phone" />
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Team Color" />
+-            <Spinner android:id="@id/takTeamSpinner" android:background="@drawable/spinner_background" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="12.0dip" android:popupBackground="@color/surface" />
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Role" />
+-            <Spinner android:id="@id/takRoleSpinner" android:background="@drawable/spinner_background" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="16.0dip" android:popupBackground="@color/surface" />
+-            <View android:background="@color/background" android:layout_width="fill_parent" android:layout_height="1.0dip" android:layout_marginBottom="16.0dip" />
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Server Enrollment" />
+-            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Scan QR code to connect to a TAK server" />
+-            <Button android:textSize="16.0sp" android:textColor="@android:color/white" android:id="@id/takEnrollQrButton" android:layout_width="fill_parent" android:layout_height="52.0dip" android:layout_marginBottom="8.0dip" android:text="Scan Enrollment QR Code" android:backgroundTint="@color/primary" />
+-            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:id="@id/takEnrollStatus" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="12.0dip" />
+-            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Group Assignment" />
+-            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Fetch available groups from the server and assign this client" />
+-            <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takFetchGroupsButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="8.0dip" android:text="Fetch Groups" android:backgroundTint="@color/accent" />
+-            <LinearLayout android:orientation="vertical" android:id="@id/takGroupCheckboxContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="4.0dip" />
+-            <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takAssignGroupsButton" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="4.0dip" android:text="Assign Selected Groups" android:backgroundTint="@color/primary" />
+-            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:id="@id/takGroupStatus" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="12.0dip" />
+-            <View android:background="@color/background" android:layout_width="fill_parent" android:layout_height="1.0dip" android:layout_marginBottom="12.0dip" />
+-            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/advancedHeader" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="8.0dip" android:paddingStart="4.0dip" android:paddingEnd="4.0dip">
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Callsign" />
++            <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takCallsign" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="6.0dip" android:hint="Your callsign" android:inputType="text" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Phone Number" />
++            <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takPhone" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="6.0dip" android:hint="Your phone number" android:inputType="phone" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Team Color" />
++            <Spinner android:id="@id/takTeamSpinner" android:background="@drawable/spinner_background" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="6.0dip" android:popupBackground="@color/surface" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Role" />
++            <Spinner android:id="@id/takRoleSpinner" android:background="@drawable/spinner_background" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="8.0dip" android:popupBackground="@color/surface" />
++            <Switch android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:tag="mod_emergency_toggle" android:layout_width="fill_parent" android:layout_height="40.0dip" android:layout_marginBottom="8.0dip" android:checked="true" android:text="Show Emergency Button" />
++            <Switch android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:tag="mod_send_on_place_toggle" android:layout_width="fill_parent" android:layout_height="40.0dip" android:layout_marginBottom="8.0dip" android:checked="false" android:text="Send Marker Upon Placement" />
++            <View android:background="@color/background" android:layout_width="fill_parent" android:layout_height="1.0dip" android:layout_marginBottom="8.0dip" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Server Enrollment" />
++            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Scan QR code to connect to a TAK server" />
++            <Button android:textSize="16.0sp" android:textColor="@android:color/white" android:id="@id/takEnrollQrButton" android:layout_width="fill_parent" android:layout_height="52.0dip" android:layout_marginBottom="4.0dip" android:text="Scan Enrollment QR Code" android:backgroundTint="@color/primary" />
++            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:id="@id/takEnrollStatus" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Group Assignment" />
++            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Fetch available groups from the server and assign this client" />
++            <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takFetchGroupsButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="4.0dip" android:text="Fetch Groups" android:backgroundTint="@color/accent" />
++            <LinearLayout android:orientation="vertical" android:id="@id/takGroupCheckboxContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="2.0dip" />
++            <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takAssignGroupsButton" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="2.0dip" android:text="Assign Selected Groups" android:backgroundTint="@color/primary" />
++            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:id="@id/takGroupStatus" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip" />
++            <View android:background="@color/background" android:layout_width="fill_parent" android:layout_height="1.0dip" android:layout_marginBottom="6.0dip" />
++            <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Map Sources" />
++            <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Add your own tile servers, e.g. TileServer GL" />
++            <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:tag="custom_map_sources_button" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="6.0dip" android:text="Manage Map Sources" android:backgroundTint="@color/accent" />
++            <View android:background="@color/background" android:layout_width="fill_parent" android:layout_height="1.0dip" android:layout_marginBottom="6.0dip" />
++            <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/advancedHeader" android:background="?selectableItemBackground" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="4.0dip" android:paddingStart="4.0dip" android:paddingEnd="4.0dip">
+                 <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_secondary" android:id="@id/advancedHeaderText" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="Advanced Settings" android:layout_weight="1.0" />
+                 <ImageView android:id="@id/advancedArrow" android:layout_width="24.0dip" android:layout_height="24.0dip" android:src="@android:drawable/arrow_down_float" android:contentDescription="Expand" app:tint="@color/text_secondary" />
+             </LinearLayout>
+             <LinearLayout android:orientation="vertical" android:id="@id/advancedContent" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content">
+-                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Server" />
+-                <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="12.0dip">
++                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Server" />
++                <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip">
+                     <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takServerAddress" android:background="@color/background" android:padding="12.0dip" android:layout_width="0.0dip" android:layout_height="48.0dip" android:hint="Server address" android:layout_weight="3.0" android:inputType="text" android:layout_marginEnd="8.0dip" />
+                     <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takServerPort" android:background="@color/background" android:padding="12.0dip" android:layout_width="0.0dip" android:layout_height="48.0dip" android:hint="8089" android:layout_weight="1.0" android:inputType="number" />
+                 </LinearLayout>
+-                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Manual Enrollment" />
+-                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollUsername" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="8.0dip" android:hint="TAK Username" android:inputType="text" />
+-                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollPassword" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="8.0dip" android:hint="TAK Password" android:inputType="textPassword" />
+-                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollPort" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="8.0dip" android:hint="Enrollment Port (default 8446)" android:inputType="number" />
+-                <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takEnrollButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="12.0dip" android:text="Enroll &amp; Download Certs" android:backgroundTint="@color/accent" />
+-                <TextView android:textSize="12.0sp" android:id="@id/certExpirationLabel" android:paddingBottom="12.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+-                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Manual Certificate Import" />
+-                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Trust Store (.p12)" />
+-                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="12.0dip">
++                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Manual Enrollment" />
++                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollUsername" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="4.0dip" android:hint="TAK Username" android:inputType="text" />
++                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollPassword" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="4.0dip" android:hint="TAK Password" android:inputType="textPassword" />
++                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takEnrollPort" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="4.0dip" android:hint="Enrollment Port (default 8446)" android:inputType="number" />
++                <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takEnrollButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="6.0dip" android:text="Enroll &amp; Download Certs" android:backgroundTint="@color/accent" />
++                <TextView android:textSize="12.0sp" android:id="@id/certExpirationLabel" android:paddingBottom="6.0dip" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" />
++                <TextView android:textSize="14.0sp" android:textStyle="bold" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Manual Certificate Import" />
++                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Trust Store (.p12)" />
++                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip">
+                     <Button android:textSize="12.0sp" android:textColor="@android:color/white" android:id="@id/takTrustStoreButton" android:layout_width="wrap_content" android:layout_height="40.0dip" android:text="Select File" android:layout_marginEnd="12.0dip" android:backgroundTint="@color/accent" />
+                     <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:ellipsize="middle" android:id="@id/takTrustStoreLabel" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="No file selected" android:singleLine="true" android:layout_weight="1.0" />
+                 </LinearLayout>
+-                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Client Certificate (.p12)" />
+-                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="12.0dip">
++                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Client Certificate (.p12)" />
++                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="6.0dip">
+                     <Button android:textSize="12.0sp" android:textColor="@android:color/white" android:id="@id/takClientCertButton" android:layout_width="wrap_content" android:layout_height="40.0dip" android:text="Select File" android:layout_marginEnd="12.0dip" android:backgroundTint="@color/accent" />
+                     <TextView android:textSize="12.0sp" android:textColor="@color/text_secondary" android:ellipsize="middle" android:id="@id/takClientCertLabel" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="No file selected" android:singleLine="true" android:layout_weight="1.0" />
+                 </LinearLayout>
+-                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Certificate Password" />
+-                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takCertPassword" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="16.0dip" android:hint="atakatak" android:inputType="textPassword" />
+-                <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takTestConnectionButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="8.0dip" android:text="Test Connection" android:backgroundTint="@color/accent" />
++                <TextView android:textSize="13.0sp" android:textColor="@color/text_primary" android:paddingBottom="2.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Certificate Password" />
++                <EditText android:textSize="14.0sp" android:textColor="@color/text_primary" android:textColorHint="@color/text_secondary" android:id="@id/takCertPassword" android:background="@color/background" android:padding="12.0dip" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_marginBottom="8.0dip" android:hint="atakatak" android:inputType="textPassword" />
++                <Button android:textSize="14.0sp" android:textColor="@android:color/white" android:id="@id/takTestConnectionButton" android:layout_width="fill_parent" android:layout_height="44.0dip" android:layout_marginBottom="4.0dip" android:text="Test Connection" android:backgroundTint="@color/accent" />
+             </LinearLayout>
+         </LinearLayout>
+     </ScrollView>
+diff -ruN a/smali_classes2/com/taklite/client/MainActivity$6.smali b/smali_classes2/com/taklite/client/MainActivity$6.smali
+--- a/smali_classes2/com/taklite/client/MainActivity$6.smali
++++ b/smali_classes2/com/taklite/client/MainActivity$6.smali
+@@ -99,6 +99,8 @@
+ 
+     move-result-object p3
+ 
++    invoke-static {p3}, Lcom/taklite/client/mod/RemoteMarkers;->onDeleted(Ljava/lang/String;)V
++
+     iget-object v0, p0, Lcom/taklite/client/MainActivity$6;->this$0:Lcom/taklite/client/MainActivity;
+ 
+     .line 1562
+@@ -369,6 +371,8 @@
+ 
+     iget-object v10, v0, Lcom/taklite/client/DroppedMarker;->remarks:Ljava/lang/String;
+ 
++    invoke-static {v0}, Lcom/taklite/client/mod/MarkerIds;->beforeSend(Lcom/taklite/client/DroppedMarker;)V
++
+     .line 1584
+     invoke-virtual/range {v1 .. v10}, Lcom/taklite/client/tak/TakManager;->sendMarker(DDDLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ 
+diff -ruN a/smali_classes2/com/taklite/client/MainActivity.smali b/smali_classes2/com/taklite/client/MainActivity.smali
+--- a/smali_classes2/com/taklite/client/MainActivity.smali
++++ b/smali_classes2/com/taklite/client/MainActivity.smali
+@@ -444,6 +444,21 @@
+ .method private applyMapType(I)Ljava/lang/String;
+     .locals 2
+ 
++    iget-object v0, p0, Lcom/taklite/client/MainActivity;->mapView:Lorg/osmdroid/views/MapView;
++
++    invoke-static {p0, v0, p1}, Lcom/taklite/client/mod/CustomMapSources;->applyMapType(Landroid/content/Context;Lorg/osmdroid/views/MapView;I)Ljava/lang/String;
++
++    move-result-object v0
++
++    if-eqz v0, :mod_builtin_map
++
++    const/4 v1, 0x0
++
++    invoke-direct {p0, v1}, Lcom/taklite/client/MainActivity;->applyDarkFilter(Z)V
++
++    return-object v0
++
++    :mod_builtin_map
+     const/4 v0, 0x1
+ 
+     if-eq p1, v0, :cond_2
+@@ -2998,6 +3013,128 @@
+     return-object v0
+ .end method
+ 
++.method public modMarkerIcon(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
++    .locals 6
++
++    move-object v0, p0
++
++    move-object v1, p1
++
++    const-string v2, "White"
++
++    const/4 v3, 0x0
++
++    move-object v4, p2
++
++    move-object v5, p3
++
++    invoke-direct/range {v0 .. v5}, Lcom/taklite/client/MainActivity;->createTakMarkerIcon(Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;)Landroid/graphics/drawable/Drawable;
++
++    move-result-object v0
++
++    return-object v0
++.end method
++
++.method public modStopFollowing()V
++    .locals 1
++
++    iget-boolean v0, p0, Lcom/taklite/client/MainActivity;->gpsLocked:Z
++
++    if-eqz v0, :mod_not_following
++
++    invoke-direct {p0}, Lcom/taklite/client/MainActivity;->toggleGpsLock()V
++
++    :mod_not_following
++    return-void
++.end method
++
++.method public modDismissRadialMenu()V
++    .locals 0
++
++    invoke-direct {p0}, Lcom/taklite/client/MainActivity;->dismissRadialMenu()V
++
++    return-void
++.end method
++
++.method public modDroppedMarkers()Ljava/util/Map;
++    .locals 1
++
++    iget-object v0, p0, Lcom/taklite/client/MainActivity;->droppedMarkers:Ljava/util/Map;
++
++    return-object v0
++.end method
++
++.method public modTakUserMarkers()Ljava/util/Map;
++    .locals 1
++
++    iget-object v0, p0, Lcom/taklite/client/MainActivity;->takUserMarkers:Ljava/util/Map;
++
++    return-object v0
++.end method
++
++.method public modSaveDroppedMarkers()V
++    .locals 0
++
++    invoke-direct {p0}, Lcom/taklite/client/MainActivity;->saveDroppedMarkers()V
++
++    return-void
++.end method
++
++.method public modSetMapType(IZ)V
++    .locals 4
++
++    iput p1, p0, Lcom/taklite/client/MainActivity;->currentMapType:I
++
++    const-string v0, "TAKLitePrefs"
++
++    const/4 v1, 0x0
++
++    invoke-virtual {p0, v0, v1}, Lcom/taklite/client/MainActivity;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
++
++    move-result-object v0
++
++    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
++
++    move-result-object v0
++
++    const-string v2, "map_type"
++
++    invoke-interface {v0, v2, p1}, Landroid/content/SharedPreferences$Editor;->putInt(Ljava/lang/String;I)Landroid/content/SharedPreferences$Editor;
++
++    move-result-object v0
++
++    invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
++
++    invoke-direct {p0, p1}, Lcom/taklite/client/MainActivity;->applyMapType(I)Ljava/lang/String;
++
++    move-result-object v0
++
++    if-eqz p2, :mod_quiet
++
++    new-instance v2, Ljava/lang/StringBuilder;
++
++    const-string v3, "Map: "
++
++    invoke-direct {v2, v3}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
++
++    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {p0, v0, v1}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
++
++    :mod_quiet
++    return-void
++.end method
++
+ .method private cycleMapType()V
+     .locals 4
+ 
+@@ -3006,7 +3143,11 @@
+     add-int/lit8 v0, v0, 0x1
+ 
+     .line 1806
+-    rem-int/lit8 v0, v0, 0x4
++    invoke-static {p0}, Lcom/taklite/client/mod/CustomMapSources;->getMapTypeCount(Landroid/content/Context;)I
++
++    move-result v1
++
++    rem-int v0, v0, v1
+ 
+     iput v0, p0, Lcom/taklite/client/MainActivity;->currentMapType:I
+ 
+@@ -4832,6 +4973,8 @@
+     .line 1526
+     invoke-direct {p0}, Lcom/taklite/client/MainActivity;->saveDroppedMarkers()V
+ 
++    invoke-static {p0, v2}, Lcom/taklite/client/mod/MarkerSend;->onPlaced(Lcom/taklite/client/MainActivity;Lcom/taklite/client/DroppedMarker;)V
++
+     return-void
+ .end method
+ 
+@@ -6091,6 +6234,8 @@
+ 
+     iput-object v1, p0, Lcom/taklite/client/MainActivity;->activeRadialMenu:Landroid/view/View;
+ 
++    invoke-static {p0, v1, p1}, Lcom/taklite/client/mod/MarkerMove;->attach(Lcom/taklite/client/MainActivity;Landroid/view/View;Lcom/taklite/client/DroppedMarker;)V
++
+     .line 1602
+     invoke-virtual {p0}, Lcom/taklite/client/MainActivity;->getWindow()Landroid/view/Window;
+ 
+@@ -8779,6 +8924,8 @@
+     invoke-virtual {p2}, Lorg/osmdroid/views/MapView;->invalidate()V
+ 
+     .line 1696
++    invoke-static {p0, p1}, Lcom/taklite/client/mod/MarkerSend;->onEdited(Lcom/taklite/client/MainActivity;Lcom/taklite/client/DroppedMarker;)V
++
+     iget-boolean p1, p1, Lcom/taklite/client/DroppedMarker;->remote:Z
+ 
+     if-nez p1, :cond_3
+@@ -8948,6 +9095,8 @@
+     iget-object v9, p1, Lcom/taklite/client/DroppedMarker;->remarks:Ljava/lang/String;
+ 
+     .line 1717
++    invoke-static {p1}, Lcom/taklite/client/mod/MarkerIds;->beforeSend(Lcom/taklite/client/DroppedMarker;)V
++
+     invoke-virtual/range {v0 .. v9}, Lcom/taklite/client/tak/TakManager;->sendMarker(DDDLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ 
+     const/4 p2, 0x1
+@@ -9232,6 +9381,8 @@
+ 
+     invoke-interface {v1, v2}, Lorg/osmdroid/config/IConfigurationProvider;->setUserAgentValue(Ljava/lang/String;)V
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/CustomMapSources;->beforeMapCreated(Landroid/content/Context;)V
++
+     .line 146
+     sget v1, Lcom/taklite/client/R$layout;->activity_main:I
+ 
+@@ -9624,6 +9775,8 @@
+     invoke-virtual {v0, p1}, Landroid/app/NotificationManager;->createNotificationChannel(Landroid/app/NotificationChannel;)V
+ 
+     :cond_4
++    invoke-static {p0}, Lcom/taklite/client/mod/CustomMapSources;->onMainActivityCreated(Lcom/taklite/client/MainActivity;)V
++
+     return-void
+ .end method
+ 
+@@ -9768,6 +9921,8 @@
+     .line 260
+     invoke-virtual {v1}, Lorg/osmdroid/views/MapView;->onResume()V
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/CustomMapSources;->onMainActivityResumed(Lcom/taklite/client/MainActivity;)V
++
+     :cond_0
+     iget-object v1, p0, Lcom/taklite/client/MainActivity;->videoPlayer:Landroidx/media3/exoplayer/ExoPlayer;
+ 
+diff -ruN a/smali_classes2/com/taklite/client/RadialMenuView.smali b/smali_classes2/com/taklite/client/RadialMenuView.smali
+--- a/smali_classes2/com/taklite/client/RadialMenuView.smali
++++ b/smali_classes2/com/taklite/client/RadialMenuView.smali
+@@ -49,6 +49,8 @@
+ 
+ .field private userListener:Lcom/taklite/client/RadialMenuView$UserRadialMenuListener;
+ 
++.field public modMove:Ljava/lang/Runnable;
++
+ 
+ # direct methods
+ .method public constructor <init>(Landroid/content/Context;FFLcom/taklite/client/RadialMenuView$RadialMenuListener;)V
+@@ -63,7 +65,7 @@
+ 
+     iput-object p4, p0, Lcom/taklite/client/RadialMenuView;->listener:Lcom/taklite/client/RadialMenuView$RadialMenuListener;
+ 
+-    const/4 p4, 0x3
++    const/4 p4, 0x4
+ 
+     iput p4, p0, Lcom/taklite/client/RadialMenuView;->numItems:I
+ 
+@@ -143,7 +145,21 @@
+ 
+     aput-object p1, p2, p3
+ 
+-    const/high16 p1, -0x3cae0000    # -210.0f
++    iget-object p2, p0, Lcom/taklite/client/RadialMenuView;->icons:[Landroid/graphics/Bitmap;
++
++    invoke-virtual {p0}, Lcom/taklite/client/RadialMenuView;->getContext()Landroid/content/Context;
++
++    move-result-object p1
++
++    invoke-static {p1}, Lcom/taklite/client/mod/MarkerMove;->radialIcon(Landroid/content/Context;)Landroid/graphics/Bitmap;
++
++    move-result-object p1
++
++    const/4 p3, 0x3
++
++    aput-object p1, p2, p3
++
++    const/high16 p1, -0x3c9f0000    # -225.0f
+ 
+     .line 57
+     invoke-direct {p0, p1}, Lcom/taklite/client/RadialMenuView;->setupSectors(F)V
+@@ -247,6 +263,17 @@
+ 
+     if-eq p1, v2, :cond_0
+ 
++    const/4 v2, 0x3
++
++    if-ne p1, v2, :mod_not_move
++
++    iget-object v2, p0, Lcom/taklite/client/RadialMenuView;->modMove:Ljava/lang/Runnable;
++
++    if-eqz v2, :mod_not_move
++
++    invoke-interface {v2}, Ljava/lang/Runnable;->run()V
++
++    :mod_not_move
+     goto :goto_0
+ 
+     .line 206
+diff -ruN a/smali_classes2/com/taklite/client/SettingsActivity.smali b/smali_classes2/com/taklite/client/SettingsActivity.smali
+--- a/smali_classes2/com/taklite/client/SettingsActivity.smali
++++ b/smali_classes2/com/taklite/client/SettingsActivity.smali
+@@ -6155,6 +6155,8 @@
+     .line 155
+     invoke-direct {p0}, Lcom/taklite/client/SettingsActivity;->setupTakSettings()V
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/CustomMapSources;->onSettingsCreated(Landroid/app/Activity;)V
++
+     return-void
+ .end method
+ 
+diff -ruN a/smali_classes2/com/taklite/client/tak/TakLocationService.smali b/smali_classes2/com/taklite/client/tak/TakLocationService.smali
+--- a/smali_classes2/com/taklite/client/tak/TakLocationService.smali
++++ b/smali_classes2/com/taklite/client/tak/TakLocationService.smali
+@@ -1923,6 +1923,8 @@
+     .line 97
+     invoke-super {p0}, Landroid/app/Service;->onCreate()V
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/imports/Imports;->init(Landroid/content/Context;)V
++
+     sput-object p0, Lcom/taklite/client/tak/TakLocationService;->instance:Lcom/taklite/client/tak/TakLocationService;
+ 
+     .line 99
+diff -ruN a/smali_classes2/com/taklite/client/tak/TakManager.smali b/smali_classes2/com/taklite/client/tak/TakManager.smali
+--- a/smali_classes2/com/taklite/client/tak/TakManager.smali
++++ b/smali_classes2/com/taklite/client/tak/TakManager.smali
+@@ -388,6 +388,8 @@
+ 
+     move-result-object p1
+ 
++    invoke-static {p1}, Lcom/taklite/client/mod/RemoteMarkers;->adjust(Lcom/taklite/client/tak/TakUser;)V
++
+     if-eqz p1, :cond_e
+ 
+     .line 282
+@@ -680,6 +682,8 @@
+ .method public cancelAlert()V
+     .locals 3
+ 
++    invoke-static {}, Lcom/taklite/client/mod/MapOptions;->onAlertChanged()V
++
+     iget-object v0, p0, Lcom/taklite/client/tak/TakManager;->client:Lcom/taklite/client/tak/TakClient;
+ 
+     if-eqz v0, :cond_1
+@@ -961,6 +965,16 @@
+     return v0
+ .end method
+ 
++.method public modForgetUser(Ljava/lang/String;)V
++    .locals 1
++
++    iget-object v0, p0, Lcom/taklite/client/tak/TakManager;->takUsers:Ljava/util/concurrent/ConcurrentHashMap;
++
++    invoke-virtual {v0, p1}, Ljava/util/concurrent/ConcurrentHashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
++
++    return-void
++.end method
++
+ .method public isConnected()Z
+     .locals 1
+ 
+@@ -1482,6 +1496,10 @@
+ .method public onCotReceived(Ljava/lang/String;)V
+     .locals 3
+ 
++    invoke-static {p1}, Lcom/taklite/client/mod/imports/Imports;->onCotReceived(Ljava/lang/String;)V
++
++    invoke-static {p1}, Lcom/taklite/client/mod/RemoteMarkers;->observe(Ljava/lang/String;)V
++
+     .line 190
+     new-instance v0, Ljava/lang/StringBuilder;
+ 
+@@ -1610,6 +1628,8 @@
+ .method public sendAlert(Landroid/location/Location;Ljava/lang/String;)V
+     .locals 12
+ 
++    invoke-static {}, Lcom/taklite/client/mod/MapOptions;->onAlertChanged()V
++
+     iget-object v0, p0, Lcom/taklite/client/tak/TakManager;->client:Lcom/taklite/client/tak/TakClient;
+ 
+     if-eqz v0, :cond_1
+@@ -1762,6 +1782,12 @@
+ 
+     iget-object v2, v0, Lcom/taklite/client/tak/TakManager;->uid:Ljava/lang/String;
+ 
++    invoke-static {v2, v1}, Lcom/taklite/client/mod/MarkerIds;->uidForSend(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v1
++
++    iget-object v2, v0, Lcom/taklite/client/tak/TakManager;->uid:Ljava/lang/String;
++
+     iget-object v3, v0, Lcom/taklite/client/tak/TakManager;->callsign:Ljava/lang/String;
+ 
+     move-object v4, v1
+@@ -1783,6 +1809,10 @@
+ 
+     move-result-object v2
+ 
++    invoke-static {v2}, Lcom/taklite/client/mod/MarkerIds;->outgoing(Ljava/lang/String;)Ljava/lang/String;
++
++    move-result-object v2
++
+     iget-object v3, v0, Lcom/taklite/client/tak/TakManager;->client:Lcom/taklite/client/tak/TakClient;
+ 
+     .line 172
+diff -ruN a/smali_classes2/com/taklite/client/tak/TakUser.smali b/smali_classes2/com/taklite/client/tak/TakUser.smali
+--- a/smali_classes2/com/taklite/client/tak/TakUser.smali
++++ b/smali_classes2/com/taklite/client/tak/TakUser.smali
+@@ -355,6 +355,18 @@
+ .method public isExpired()Z
+     .locals 6
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/RemoteMarkers;->keep(Lcom/taklite/client/tak/TakUser;)Z
++
++    move-result v0
++
++    if-eqz v0, :mod_not_kept
++
++    const/4 v0, 0x0
++
++    return v0
++
++    :mod_not_kept
++
+     .line 45
+     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+ 
+@@ -384,6 +396,18 @@
+ .method public isStale()Z
+     .locals 4
+ 
++    invoke-static {p0}, Lcom/taklite/client/mod/RemoteMarkers;->keep(Lcom/taklite/client/tak/TakUser;)Z
++
++    move-result v0
++
++    if-eqz v0, :mod_not_kept
++
++    const/4 v0, 0x0
++
++    return v0
++
++    :mod_not_kept
++
+     .line 41
+     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+ 
